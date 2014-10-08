@@ -26,16 +26,16 @@ type IStock interface {
 type orderType int
 
 const (
-	buy orderType = iota
-	sell orderType = iota
+	OTBuy orderType = iota
+	OTSell orderType = iota
 )
 
 type dealType int
 
 const (
-	pending dealType = iota
-	wait dealType = iota
-	ok dealType = iota
+	DTPending dealType = iota
+	DTWait dealType = iota
+	DTOK dealType = iota
 )
 
 type Order struct {
@@ -48,7 +48,7 @@ type Order struct {
 }
 
 func CanBuy(a Order, b Order) bool {
-	return a.Price > b.Price
+	return a.Price >= b.Price
 }
 
 func Buy(a Order, b Order) (na Order, nb Order) {
@@ -57,13 +57,18 @@ func Buy(a Order, b Order) (na Order, nb Order) {
 	if a.Count > b.Count {
 		na.Count = a.Count - b.Count
 		nb.Count = 0
-		na.DealType = wait
-		nb.DealType = ok
-	}else{
+		na.DealType = DTWait
+		nb.DealType = DTOK
+	}else if a.Count < b.Count {
 		nb.Count = b.Count - a.Count
 		na.Count = 0
-		nb.DealType = wait
-		na.DealType = ok
+		nb.DealType = DTWait
+		na.DealType = DTOK
+	}else{
+		na.Count = 0
+		nb.Count = 0
+		na.DealType = DTOK
+		nb.DealType = DTOK
 	}
 	return
 }
@@ -73,6 +78,10 @@ type Deal struct {
 	Sell Order
 	Price float32
 	Time time.Time
+}
+
+func IsSolve(deal Deal) bool {
+	return deal.Buy.DealType == DTOK && deal.Sell.DealType == DTOK
 }
 
 type IPlatform interface {

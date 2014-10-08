@@ -2,10 +2,12 @@ package app
 
 import (
 	"reflect"
+	"lib/tool"
 )
 
 type SimplePlatform struct {
 	OrderList []Order
+	Logger tool.ILogger
 } 
 
 func (p *SimplePlatform) Request(order Order) bool{
@@ -14,16 +16,35 @@ func (p *SimplePlatform) Request(order Order) bool{
 }
 
 func (p *SimplePlatform) PerformTransaction() []Deal{
-	var dealList []Deal
-	var buyList []Order
-	var sellList []Order
-	/*for {
-		nd, nb, ns := DealWith( buyList, sellList, dealList )
-		if nd, nd, ns == buyList, sellList, dealList {
-		
+	buyList := FilterWith( p.OrderList, func(order Order) bool{
+		return order.Type == OTBuy
+	})
+	sellList := FilterWith( p.OrderList, func(order Order) bool{
+		return order.Type == OTSell
+	})
+	p.Logger.Log(buyList)
+	p.Logger.Log(sellList)
+	return DoDeal( buyList, sellList, []Deal{} )
+}
+
+func FilterWith(orders []Order, filter func(order Order)bool) []Order {
+	var ret []Order
+	for _, order := range orders {
+		if filter(order) {
+			ret = append( ret, order )
 		}
-	}*/
-	return nil
+	}
+	return ret
+}
+
+func DoDeal(buyList []Order, sellList []Order, dealList []Deal) []Deal {
+	nb, ns, nd := DealWith( buyList, sellList, dealList )
+	isChanged := [3]int{len(nb), len(ns), len(nd)} != [3]int{len(buyList), len(sellList), len(dealList)}
+	if isChanged {
+		return DoDeal(nb, ns, nd )
+	}else{
+		return nd
+	}
 }
 
 func DealWith(buyList []Order, sellList []Order, dealList []Deal) (nextBuyList []Order, nextSellList []Order, nextDealList []Deal) {
@@ -49,7 +70,7 @@ func DealWith(buyList []Order, sellList []Order, dealList []Deal) (nextBuyList [
 				return append([]Order{nextSell}, sellList[1:]...)
 			}
 		}()
-		nextDealList = append( nextDealList, deal )
+		nextDealList = append( dealList, deal )
 		return
 	}
 	return buyList, sellList, dealList

@@ -4,12 +4,14 @@ import (
     "fmt"
     "net/http"
 	"lib/tool"
+	"app"
 )
 
 func init() {
     FuncFrontControl := func(w http.ResponseWriter, r *http.Request){
         tool.FrontControl(w, r,
             tool.ActionMap{
+				
             },
         )
     }
@@ -18,5 +20,6 @@ func init() {
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
-    fmt.Fprint(w, "Hello, world!")
+	fmt.Fprintln(w, "Hello, world!")
+	app.Test(w, r)
 }

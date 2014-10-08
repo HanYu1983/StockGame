@@ -13,3 +13,7 @@ type ICookieManager interface {
     SetValue(v string)
     Clear()
 }
+
+type ILogger interface {
+	Log(msg interface{})
+}
