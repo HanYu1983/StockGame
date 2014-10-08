@@ -22,8 +22,6 @@ func (p *SimplePlatform) PerformTransaction() []Deal{
 	sellList := FilterWith( p.OrderList, func(order Order) bool{
 		return order.Type == OTSell
 	})
-	p.Logger.Log(buyList)
-	p.Logger.Log(sellList)
 	return DoDeal( buyList, sellList, []Deal{} )
 }
 
