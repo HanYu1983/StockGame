@@ -1,5 +1,9 @@
 package tool
 
+import (
+	"net/http"
+)
+
 type IRepository interface {
     Create(po interface{}) int64
     Update(key int64, po interface{})
@@ -15,5 +19,11 @@ type ICookieManager interface {
 }
 
 type ILogger interface {
+	Log(msg interface{})
+}
+
+type ISystem interface {
+	GetRequest() *http.Request
+	GetResponse() http.ResponseWriter
 	Log(msg interface{})
 }

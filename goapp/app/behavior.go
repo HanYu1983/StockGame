@@ -30,45 +30,39 @@ const (
 	OTSell orderType = iota
 )
 
-type dealType int
-
-const (
-	DTPending dealType = iota
-	DTWait dealType = iota
-	DTOK dealType = iota
-)
 
 type Order struct {
+	Key string
 	PlayerKey string
 	Type orderType
 	Price float32
 	Count int
 	Time time.Time
-	DealType dealType
+}
+
+func (o Order) IsSolve() bool{
+	return o.Count == 0
 }
 
 func CanBuy(a Order, b Order) bool {
 	return a.Price >= b.Price
 }
 
-func Buy(a Order, b Order) (na Order, nb Order) {
+func Buy(a Order, b Order) (na Order, nb Order, count int) {
 	na = a
 	nb = b
 	if a.Count > b.Count {
-		na.Count = a.Count - b.Count
+		count = b.Count
+		na.Count = a.Count - count
 		nb.Count = 0
-		na.DealType = DTWait
-		nb.DealType = DTOK
 	}else if a.Count < b.Count {
-		nb.Count = b.Count - a.Count
+		count = a.Count
+		nb.Count = b.Count - count
 		na.Count = 0
-		nb.DealType = DTWait
-		na.DealType = DTOK
 	}else{
+		count = a.Count
 		na.Count = 0
 		nb.Count = 0
-		na.DealType = DTOK
-		nb.DealType = DTOK
 	}
 	return
 }
@@ -76,12 +70,13 @@ func Buy(a Order, b Order) (na Order, nb Order) {
 type Deal struct {
 	Buy Order
 	Sell Order
+	Count int
 	Price float32
 	Time time.Time
 }
 
 func IsSolve(deal Deal) bool {
-	return deal.Buy.DealType == DTOK && deal.Sell.DealType == DTOK
+	return deal.Buy.Count == 0 && deal.Sell.Count == 0
 }
 
 type IPlatform interface {

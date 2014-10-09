@@ -1,37 +1,33 @@
 package app
 
 import (
-	"net/http"
 	"lib/tool"
 	"time"
 )
 
-func TestHandler(){
-
-}
-
-func Test(w http.ResponseWriter, r *http.Request){
-	var logger tool.ILogger
-	var platform IPlatform
-	
-	logger = &tool.ConsoleLogger{Writer: w}
-	platform = &SimplePlatform{Logger: logger}
-	
+func TestCheckDeal(sys tool.ISystem)interface{}{
 	orders := []Order{
-		Order{Type:OTBuy, Price:3, Count:5, Time: time.Now()},
-		Order{Type:OTBuy, Price:2, Count:1, Time: time.Now()},
+		Order{Key: "b0", Type:OTBuy, Price:3, Count:5, Time: time.Now()},
+		Order{Key: "b1", Type:OTBuy, Price:2, Count:1, Time: time.Now()},
+		Order{Key: "b2", Type:OTBuy, Price:2, Count:1, Time: time.Now()},
 		
-		Order{Type:OTSell, Price:1.2, Count:2, Time: time.Now()},
-		Order{Type:OTSell, Price:1.5, Count:2, Time: time.Now()},
-		Order{Type:OTSell, Price:2, Count:2, Time: time.Now()},
+		Order{Key: "s2", Type:OTSell, Price:2, Count:2, Time: time.Now()},
+		Order{Key: "s3", Type:OTSell, Price:1.5, Count:2, Time: time.Now()},
+		Order{Key: "s4", Type:OTSell, Price:1.2, Count:2, Time: time.Now()},
+		Order{Key: "s5", Type:OTSell, Price:2, Count:3, Time: time.Now()},
 	}
+	sys.Log("orders")
+	sys.Log(orders)
 	
-	logger.Log(orders)
+	remainList, deals := CheckDeal( orders )
+	sys.Log("remainList")
+	sys.Log(remainList)
 	
-	for _, order := range orders {
-		platform.Request( order )
-	}
-
-	deals := platform.PerformTransaction()
-	logger.Log(deals)
+	sys.Log("deals")
+	sys.Log(deals)
+	
+	solved := CheckSolvedDeal(deals)
+	sys.Log("solved")
+	sys.Log(solved)
+	return tool.CustomView
 }

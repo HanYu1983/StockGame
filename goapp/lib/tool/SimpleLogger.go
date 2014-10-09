@@ -6,11 +6,11 @@ import (
 	"encoding/json"
 )
 
-type ConsoleLogger struct {
+type SimpleLogger struct {
 	Writer http.ResponseWriter
 }
 
-func (l *ConsoleLogger) Log(msg interface{}) {
+func (l *SimpleLogger) Log(msg interface{}) {
 	str, _ := json.Marshal(msg)
 	fmt.Fprintf(l.Writer, "%s\n", str)
 }

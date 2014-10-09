@@ -35,9 +35,11 @@ func FrontControl(
             fmt.Fprintf(w, "%s", errmsg)
         }
     }()
+	var sys ISystem
+	sys = AppEngineSystem{Request: r, Response: w}
     r.ParseForm()
     cmd := GetCommand(r, "nocmd")
-    result := Call(action, cmd, w, r)[0]
+    result := Call(action, cmd, sys)[0]
     formatResult := result.Interface().(DefaultResult)
     if formatResult == CustomView {
         // nothing todo
