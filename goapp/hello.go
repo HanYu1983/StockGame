@@ -8,15 +8,14 @@ import (
 )
 
 func init() {
-    TestFrontControl := func(w http.ResponseWriter, r *http.Request){
-        tool.FrontControl(w, r,
-            tool.ActionMap{
-				"TestCheckDeal": app.TestCheckDeal,
-            },
-        )
-    }
+	testAction := tool.ActionMap{
+		"TestCheckDeal": app.TestCheckDeal,
+		"TestPlatform": app.TestPlatform,
+		"TestGetRequest": app.TestGetRequest,
+		"TestEventManager": app.TestEventManager,
+	}
     http.HandleFunc("/", handler)
-    http.HandleFunc("/Func", TestFrontControl)
+    http.HandleFunc("/Test", tool.FrontControllerWith(testAction))
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {

@@ -67,6 +67,12 @@ func Call(m ActionMap, name string, params ... interface{}) (result []reflect.Va
     return
 }
 
+func FrontControllerWith(action ActionMap) func(w http.ResponseWriter, r *http.Request){
+	return func(w http.ResponseWriter, r *http.Request){
+		FrontControl(w, r, action)
+	}
+}
+
 func PanicWhen(cond bool, msg string){
     if cond { panic(msg) }
 }

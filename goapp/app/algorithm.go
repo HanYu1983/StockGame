@@ -5,6 +5,38 @@ import (
 	"sort"
 )
 
+func (o Order) IsSolve() bool{
+	return o.Count == 0
+}
+
+func CanBuy(a Order, b Order) bool {
+	return a.Price >= b.Price
+}
+
+func Buy(a Order, b Order) (na Order, nb Order, count int) {
+	na = a
+	nb = b
+	if a.Count > b.Count {
+		count = b.Count
+		na.Count = a.Count - count
+		nb.Count = 0
+	}else if a.Count < b.Count {
+		count = a.Count
+		nb.Count = b.Count - count
+		na.Count = 0
+	}else{
+		count = a.Count
+		na.Count = 0
+		nb.Count = 0
+	}
+	return
+}
+
+func IsSolve(deal Deal) bool {
+	return deal.Buy.Count == 0 && deal.Sell.Count == 0
+}
+
+
 func CheckSolvedDeal(deals []Deal) []Deal{
 	var buf []Deal
 	solved := []Deal{}
@@ -33,6 +65,12 @@ func IsOTBuy(order Order) bool{
 
 func IsOTSell(order Order) bool{
 	return order.Type == OTSell
+}
+
+func IsPlayerKey(key string) func(order Order)bool{
+	return func(order Order) bool{
+		return order.PlayerKey == key
+	}
 }
 
 
@@ -119,4 +157,8 @@ func Map(f interface{}, xs interface{}) interface{} {
 		vys.Index(i).Set(y)
     }
 	return vys.Interface()
+}
+
+func Deal2Kline(deals []Deal) []KLine{
+	return nil
 }

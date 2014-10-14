@@ -6,7 +6,7 @@ import (
 
 type SimplePlatform struct {
 	OrderList []Order
-	Logger tool.ILogger
+	Sys tool.ISystem
 } 
 
 func (p *SimplePlatform) Request(order Order) bool{
@@ -15,12 +15,16 @@ func (p *SimplePlatform) Request(order Order) bool{
 }
 
 func (p *SimplePlatform) PerformTransaction() []Deal{
-	buyList := FilterWith( p.OrderList, func(order Order) bool{
-		return order.Type == OTBuy
-	})
-	sellList := FilterWith( p.OrderList, func(order Order) bool{
-		return order.Type == OTSell
-	})
-	_, _, deals := DoDeal( buyList, sellList, []Deal{} )
-	return deals
+	remainList, deals := CheckDeal( p.OrderList )
+	solved := CheckSolvedDeal(deals)
+	isCanSolve := len(solved) == len(deals)
+	if isCanSolve {
+		p.OrderList = remainList
+		return deals
+	}
+	return []Deal{}
+}
+
+func (p *SimplePlatform) GetRequestWithPlayerKey(key string) []Order{
+	return FilterWith( p.OrderList, IsPlayerKey(key) )
 }

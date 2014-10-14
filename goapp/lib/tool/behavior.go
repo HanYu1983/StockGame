@@ -27,3 +27,12 @@ type ISystem interface {
 	GetResponse() http.ResponseWriter
 	Log(msg interface{})
 }
+
+type IEventManager interface{
+	AddSender(key string, fn func(mgr IEventManager))
+	RemoveSender(key string, fn func(mgr IEventManager))
+	AddReceiver(key string, fn interface{})
+	RemoveReceiver(key string, fn interface{})
+	SendAgain()
+	Send(key string, params ... interface{})
+}
